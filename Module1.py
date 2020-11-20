@@ -10,6 +10,7 @@ import math
 import re
 import os
 from os import path
+from pathlib import Path
 
 # Alec Chen 47004754
 # Harkirat Sidhu, 11126100
@@ -89,10 +90,11 @@ class Indexer:
         counter = 0
         if len(title_t) > 0:
             for word in title_t:
-                wordsDict[word.lower()][0] += 9
-                counter += 1
-                if counter == 10:
-                    break
+                if word.lower() in wordsDict.keys():
+                    wordsDict[word.lower()][0] += 9
+                    counter += 1
+                    if counter == 10:
+                        break
 
         if len(h1_t) > 0:
             for word in h1_t:
@@ -133,9 +135,9 @@ class Indexer:
             tokens = self.tokenize(file)
             for token, posting in tokens.items():
                 if token not in self.index:
-                    index[token] = [posting]
+                    self.index[token] = [posting]
                 else:
-                    index[token].append(posting)
+                    self.index[token].append(posting)
         return
 
     def calculateIDF(self):
@@ -154,7 +156,12 @@ class Indexer:
             # # of documents (self.count)
             # # of tokens (len(self.index))
             # total size of index (in KB)
-            pickle.dump(target, handle)
+            pickle.dump(self.index, handle)
+        kilobytes = Path('index.pickle').stat().st_size//1000
+        f = open("report.txt","w")
+        f.write("# documents: " + str(self.count) + "\n")
+        f.write("# tokens: " + str(len(self.index)) + "\n")
+        f.write("Total size: " + str(kilobytes))
 
 
     def getNumber(self):
@@ -179,13 +186,10 @@ url1 = r"./DEV"
 osPath(url1)
 folder_list = result
 
-try:
-    index = Indexer(folder_list)
-    index.buildInvertedIndex()
-    index.calculateIDF()
-    index.write_to_file()
-except:
-    print("Failed")
+index = Indexer(folder_list)
+index.buildInvertedIndex()
+index.calculateIDF()
+index.write_to_file()
 
 # key = token:[Tuple(doc id, tf-idf score)]
 
