@@ -31,8 +31,10 @@ bookkeeper2 = dict()
 bookkeeper3 = dict()
 bookkeeper4 = dict()
 
-
+# An additional bookkeeping index to store locations
 len_posting_bookkeeper = defaultdict(int)
+
+
 
 class Posting:
     def __init__(self, f, t):
@@ -137,6 +139,7 @@ class Indexer:
         for k,v in self.index.items():
             print(k,len(v))
 
+
     def calculateIDF(self):
         for _, postings in self.index.items():
             df = len(postings)
@@ -146,9 +149,7 @@ class Indexer:
                 tf_idf = tf * idf
                 p.tfidf = tf_idf
 
-    ##############################################################################################  
-    # TODO: FINISH, TEST, TROUBLESHOOT, AND REVISE THIS SECTION ##################################
-    ##############################################################################################
+
     def merge_index(self):
         merged_index = open('index.txt', 'w+')
 
@@ -380,6 +381,7 @@ class Indexer:
             d[posting2[i]] += 1
         return [p for p in d.keys() if d[p] >= 2] # intersections
 
+
     def convert_list_tuple(self,s):
         s = s.split()[1:] # parse out token
         res = []
@@ -409,6 +411,7 @@ class Indexer:
                 if v == int(tup[0]):
                     res.append(k)
         return res
+
 
     def write_to_file(self):
         with open(f'data{self.f_count}.txt', 'w+') as handle:
